@@ -19,7 +19,7 @@ class MyTaskSet(TaskSet):
     def about(self):
         response = self.client.get("/dashboard?id=admin")
     
-    @seq_task(1)
+    @seq_task(2)
     def new_resource_and_package_create(self):
         self.resource_name = random_string(8).lower()
         response = self.client.get("/dataset/new")
