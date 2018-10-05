@@ -36,3 +36,8 @@ The number in the @task(number) indicates the frequence of the test function exe
 - [x] Mock browser explor dashboard page
 - [x] Use ckan API to create fake users (after create user, the user session/cookies was created and kept by the instance (self) by default)
 - [x] use ckan API to create new Dataset and resources attached to a dataset
+
+
+
+# Run locust without the web UI
+- locust -f client_simulate_test.py --no-web -c 1 -r 1 --run-time 5s --host=https://hub-dev.research.csiro.au

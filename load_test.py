@@ -7,6 +7,8 @@ import json
 class UserBehavior(TaskSet):
 
     faker = faker.Faker()
+    min_wait = 0
+    max_wait = 0
 
     def on_start(self):
         """ on_start is called when a Locust start before any task is scheduled """
@@ -15,7 +17,7 @@ class UserBehavior(TaskSet):
         self.fake_user()
 
     def on_quit(self):
-        headers = {'Authorization': 'c2375a97-0bd6-4831-9267-b024fb71e2d3', 'content-type': 'application/json'}
+        headers = {'Authorization': self.api_key, 'content-type': 'application/json'}
         payload = json.dumps({'id': self.person_id})
         response = self.client.delete("/api/3/action/user_delete", headers=headers, data=payload)
 
@@ -25,7 +27,7 @@ class UserBehavior(TaskSet):
         person_id = '{0}_{1}_test_user'.format(first_name, last_name)
         person_password = '{0}_{1}_test_password'.format(first_name, last_name)
         person_email = '{0}_{1}_test_email@nowhere.null'.format(first_name, last_name)
-        headers = {'Authorization': 'c2375a97-0bd6-4831-9267-b024fb71e2d3', 'content-type': 'application/json'}
+        headers = {'Authorization': 'f55d0fb1-5ed2-4d83-bc0b-4343356c7c46', 'content-type': 'application/json'}
         payload = json.dumps({'name': person_id, 'email': person_email, 'password': person_password})
         self.maintainer = person_id
         self.author = person_id
@@ -46,7 +48,7 @@ class UserBehavior(TaskSet):
     def query_dataset(self):
         self.client.get("/dataset")
 
-    @task(1)
+    @task(5)
     def new_dataset(self):
         self.name = self.faker.name()
         payload = json.dumps({
@@ -70,9 +72,10 @@ class UserBehavior(TaskSet):
 
     @task(20)
     def dataset_query(self):
-        self.client.get('/dataset/' + self.package_id)
+        if hasattr(self, 'package_id'):
+            self.client.get('/dataset/' + self.package_id)
 
-    @task(40)
+    @task(30)
     def index(self):
         self.client.get("/")
 
@@ -83,5 +86,4 @@ class UserBehavior(TaskSet):
 
 class WebsiteUser(HttpLocust):
     task_set = UserBehavior
-    min_wait = 5000
-    max_wait = 9000
+
