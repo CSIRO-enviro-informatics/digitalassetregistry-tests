@@ -19,16 +19,13 @@ class MyTaskSet(TaskSet):
     def about(self):
         response = self.client.get("/dashboard?id=admin")
     
-    @seq_task(2)
-    def new_resource_view(self):
-        response = self.client.get("/dataset/new")
-    
-    @seq_task(3)
+    @seq_task(1)
     def new_resource_and_package_create(self):
         self.resource_name = random_string(8).lower()
         response = self.client.get("/dataset/new")
         response = self.client.post("/dataset/new", {"_ckan_phase":"dataset_new_1","pkg_name":"","title": self.resource_name,"name": self.resource_name, "asset_type":"dataset","asset_status":"sm_local-media_storage","notes":"","asset_owner":"","license_id":"notspecified","owner_org":"e70f6776-05f3-48a7-9c24-2fff14e7899a","private":"False","author":"admin","maintainer":"admin","other_affiliates":"","expl_notes":"","verified":"True","tag_string":"","related_projects":"","related_publications":"","save":""})
-        response = self.client.post("http://localhost:8082/dataset/new_resource/" + self.resource_name, { "id" : "", "name" : random_string(8).lower() , "description":"", "webtype_url":"", "filetype_url":"", "url":"", "format":"", "restricted":"", "allowed_users":"", "save": "go-metadata" })
+        response = self.client.get("/dataset/new_resource/" + self.resource_name)
+        response = self.client.post("/dataset/new_resource/" + self.resource_name, { "id" : "", "name" : random_string(8).lower() , "description":"", "webtype_url":"", "filetype_url":"", "url":"", "format":"", "restricted":"", "allowed_users":"", "save": "go-metadata" })
 
 class MyLocust(HttpLocust):
     task_set = MyTaskSet
