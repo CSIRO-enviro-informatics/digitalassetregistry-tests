@@ -46,7 +46,17 @@ class MyTaskSet(TaskSet):
         if response.status_code == 200:
             response = self.client.get("/dataset/new_resource/" + self.resource_name)
             response = self.client.post("/dataset/new_resource/" + self.resource_name, { "id" : "", "name" :random_string(8).lower() , "description":"", "webtype_url":"", "filetype_url":"", "url":"", "format":"", "restricted":"", "allowed_users":"", "save": "go-metadata" })
-
+        response = self.client.get("/dataset/edit/"+self.resource_name)
+        
+        response = self.client.post("/dataset/edit/"+self.resource_name, {"_ckan_phase":"dataset_new_1","pkg_name":"","title": self.resource_name,"name": self.resource_name, "asset_type":"dataset","asset_status":"sm_local-media_storage","notes":self.resource_name,"asset_owner":"","license_id":"notspecified","author":"admin","maintainer":"admin","other_affiliates":"","expl_notes":"","verified":"True","tag_string":"","related_projects":"","related_publications":"","save":""})
+        response = self.client.get("/dataset/"+self.resource_name)
+        if response.status_code == 200:
+            text = response.text
+            data_id_idx = text.find('data-id')
+            resource_id = text[data_id_idx+9 : data_id_idx+45]
+            response = self.client.get("/dataset/"+self.resource_name+"/resource/"+resource_id)
+            response = self.client.post("/dataset/"+self.resource_name+"/resource_edit/"+resource_id, { "id" : resource_id, "name" :random_string(8).lower() , "description":self.resource_name, "webtype_url":"", "filetype_url":"", "url":"", "format":"", "restricted":"", "allowed_users":"", "save": "go-metadata" })
+        response = self.client.post("/dataset/delete/"+self.resource_name)
 class MyLocust(HttpLocust):
     task_set = MyTaskSet
 
